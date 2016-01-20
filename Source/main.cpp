@@ -2,6 +2,12 @@
 // Example program:
 // Using SDL2 to create an application window
 
+#if defined(__linux__)
+
+	cout << "Running on Linux" << endl;
+	cout << "Added on Linux" << endl;
+
+#endif
 
 #if defined(_WIN32) || (_WIN64)
 
