@@ -283,9 +283,9 @@ int main(int argc, char* argv[]) {
 
 
 					//Update background 2
-					BG1pos_Y += (bkgdSpeed * 1) * deltaTime;
+					BG2pos_Y += (bkgdSpeed * 1) * deltaTime;
 
-					//set the new bkgd1 position
+					//set the new bkgd2 position
 					bkgd2Pos.y = (int)(BG2pos_Y + 0.5f);
 
 					//reset when off the bottom of the screen
