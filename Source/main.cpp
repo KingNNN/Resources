@@ -31,7 +31,42 @@ float deltaTime = 0.0;
 int thisTime = 0;
 int lastTime = 0;
 
+//set speed for background
+int bkgdSpeed = 100;
 
+//create the SDL_Rectangle for the texture'es position and size - x,y,w,h
+SDL_Rect bkgd1Pos, bkgd2Pos;
+
+//set temp variable to hold movement
+float BG1pos_X = 0.0, BG1pos_Y = 0.0;
+float BG2pos_X = 0.0, BG2pos_Y = -768;
+
+//move the background
+void UpdateBackground()
+{
+	//update bkg1's float position values
+	BG1pos_Y += (bkgdSpeed * 1) * deltaTime;
+	bkgd1Pos.y = (int)(BG1pos_Y + 0.5f);
+
+	//reset when off the bottom of the screen
+	if(bkgd1Pos.y >= 768)
+	{
+		bkgd1Pos.y =-768;
+		BG1pos_Y= bkgd1Pos.y;
+	}
+
+
+	//Update bkgd2's float position values
+	BG2pos_Y += (bkgdSpeed * 1) * deltaTime;
+	bkgd2Pos.y = (int)(BG2pos_Y + 0.5f);
+
+	//reset the float position values of bkgd2 when off the bottom fo screen
+	if(bkgd2Pos.y >= 768)
+	{
+		bkgd2Pos.y =-768;
+		BG2pos_Y= bkgd2Pos.y;
+	}
+}
 
 int main(int argc, char* argv[]) {
 
@@ -55,14 +90,11 @@ int main(int argc, char* argv[]) {
 
 	cout << "Running on Apple" << endl;
 
-	//get the current working directory
-	string s_cwd(getcwd(NULL,0));
+	//string var to hold the current working directory on __APPLE__
+	string currentWorkingDirectory(getcwd(NULL,0));
 
-	//create a string linking to a mac's images folder
-	string s_cwd_images = s_cwd + "/Resources/Images";
-
-	//test
-	cout << s_cwd_images << endl;
+	//create a string to link to the images folder on __APPLE__
+	string images_dir = currentWorkingDirectory +"/Resources/Images/";
 
 #endif
 
@@ -88,19 +120,23 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    //declare renderer
+    //Create a Renderer variable - pointer
     SDL_Renderer *renderer = NULL;
 
     //create the renderer
-    renderer = SDL_CreateRenderer(window, -1,SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    //*****Create Background *****
-    string BKGDpath = s_cwd_images + "/bkgd.png";
 
-    cout << BKGDpath << endl;
+
+    //////////////////////////////////////////////////////////////////////
+    //***************** Create Background  - START ***********************
+
+    //string BKGDpath = s_cwd_images + "/bkgd.png";
+
+    //cout << BKGDpath << endl;
 
     //create a SDL surface to hold the background image
-    SDL_Surface *surface = IMG_Load(BKGDpath.c_str());
+    SDL_Surface *surface = IMG_Load((images_dir + "bkgd.png").c_str());
 
     //create a SDL texture
     SDL_Texture *bkgd1;
@@ -114,11 +150,8 @@ int main(int argc, char* argv[]) {
     //place surface info into the texture bkdg1
     bkgd2 = SDL_CreateTextureFromSurface(renderer,surface);
 
-    //free the SDL surface
-    //SDL_FreeSurface(surface);
-
-    //create the SDL_Rectangle for the texture'es position and size - x,y,w,h
-    SDL_Rect bkgd1Pos;
+    ////free the SDL surface
+    SDL_FreeSurface(surface);
 
     //set the X,Y,W, and H for the Rectangle
     bkgd1Pos.x = 0;
@@ -126,57 +159,45 @@ int main(int argc, char* argv[]) {
     bkgd1Pos.w = 1024;
     bkgd1Pos.h = 768;
 
-    //create the SDL_Rectangle for the texture'es position and size - x,y,w,h
-    SDL_Rect bkgd2Pos;
-
     //set the X,Y,W, and H for the Rectangle
     bkgd2Pos.x = 0;
     bkgd2Pos.y = -768;
     bkgd2Pos.w = 1024;
     bkgd2Pos.h = 768;
 
-    //set speed for background
-    int bkgdSpeed = 100;
 
-    //set temp variable to hold movement
-    float BG1pos_X = 0.0, BG1pos_Y = 0.0;
+    //***************** Create Background  - END ***********************
+    //////////////////////////////////////////////////////////////////////
 
-    //set temp variable to hold movement
-    float BG2pos_X = 0.0, BG2pos_Y = -768;
+    /////////////////////////////////////////////////////////////
+    //**************Create Main Menu - START *****************
 
-    //create cursor
-    string CURSORpath = s_cwd_images + "/cursor.png";
+
 
     //create a SDL surface to hold the background image
-    surface = IMG_Load(CURSORpath.c_str());
+    surface = IMG_Load((images_dir + "title.png").c_str());
 
-    //create a SDL texture - background 1
-    SDL_Texture *cursor;
+    //create a SDL texture
+    SDL_Texture *title;
 
     //place surface into the texture
-    cursor = SDL_CreateTextureFromSurface(renderer,surface);
+    title = SDL_CreateTextureFromSurface(renderer,surface);
 
-    //create the SDL_Rectangle for the texture'es position and size - x,y,w,h
-    SDL_Rect cursorPos;
+    //Release the SDL surface for later use
+    SDL_FreeSurface(surface);
+
+    //create SDL Rectangle for the title graphic
+    SDL_Rect titlePos;
 
     //set the X,Y,W, and H for the Rectangle
-    cursorPos.x = 0;
-    cursorPos.y = 0;
-    cursorPos.w = 50;
-    cursorPos.h = 50;
+    titlePos.x = 0;
+    titlePos.y = 120;
+    titlePos.w = 390;
+    titlePos.h = 45;
 
 
-//	//The surface contained by the window
-//	SDL_Surface* screenSurface = NULL;
-//
-//	//Get window surface
-//	screenSurface = SDL_GetWindowSurface( window );
-//
-//	//Fill the surface white
-//	SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0, 42, 254 ) );
-//
-//	//Update the surface
-//	SDL_UpdateWindowSurface( window );
+    //**************Create Main Menu - END *****************
+    /////////////////////////////////////////////////////////////
 
 
 	//***** Set up a Game Controller variable *****
@@ -266,34 +287,9 @@ int main(int argc, char* argv[]) {
 						}
 					}
 
-					//Update
+					//Update Section
+					UpdateBackground();
 
-					//Update background 1
-					BG1pos_Y += (bkgdSpeed * 1) * deltaTime;
-
-					//set the new bkgd1 position
-					bkgd1Pos.y = (int)(BG1pos_Y + 0.5f);
-
-					//reset when off the bottom of the screen
-					if(bkgd1Pos.y >= 768)
-					{
-						bkgd1Pos.y =-768;
-						BG1pos_Y= bkgd1Pos.y;
-					}
-
-
-					//Update background 2
-					BG2pos_Y += (bkgdSpeed * 1) * deltaTime;
-
-					//set the new bkgd2 position
-					bkgd2Pos.y = (int)(BG2pos_Y + 0.5f);
-
-					//reset when off the bottom of the screen
-					if(bkgd2Pos.y >= 768)
-					{
-						bkgd2Pos.y =-768;
-						BG2pos_Y= bkgd2Pos.y;
-					}
 
 					//Start Drawing
 					//Clear SDL renderer
@@ -305,8 +301,8 @@ int main(int argc, char* argv[]) {
 					//Draw the bkgd image
 					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
 
-					//Draw the cursor image
-					SDL_RenderCopy(renderer, cursor, NULL, &cursorPos);
+					//Draw the title image
+					SDL_RenderCopy(renderer, title, NULL, &titlePos);
 
 					//SDL Render present
 					SDL_RenderPresent(renderer);
