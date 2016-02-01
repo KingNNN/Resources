@@ -6,6 +6,7 @@
 #if defined(_WIN32) || (_WIN64)
 
 #include "SDL.h"
+#include "SDL_image.h"
 
 #endif
 
@@ -16,10 +17,20 @@
 
 #endif
 
+#if defined(_WIN32) || (_WIN64)
+#include <direct.h>
+#define getcwd _getcwd
+#endif
+
 #if defined(__linux__)
 
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
 
+#endif
+
+#if defined(__linux__)
+#include <unistd.h>
 #endif
 
 #include <stdio.h>
@@ -74,6 +85,11 @@ int main(int argc, char* argv[]) {
 #if defined(_WIN32) || (_WIN64)
 
 	cout << "Running on Windows" << endl;
+	//string var to hold the current working directory on __APPLE__
+	string currentWorkingDirectory(getcwd(NULL, 0));
+
+	//create a string to link to the images folder on __APPLE__
+	string images_dir = currentWorkingDirectory + "\\Resources\\Images\\";
 
 #endif
 
@@ -82,6 +98,11 @@ int main(int argc, char* argv[]) {
 
 	cout << "Running on Linux" << endl;
 	cout << "Added on Linux" << endl;
+	//string var to hold the current working directory on __APPLE__
+	string currentWorkingDirectory(getcwd(NULL, 0));
+
+	//create a string to link to the images folder on __APPLE__
+	string images_dir = currentWorkingDirectory + "/Resources/Images/";
 
 #endif
 
@@ -366,7 +387,7 @@ int main(int argc, char* argv[]) {
     SDL_Texture *quitN;
 
     //place surface into the texture
-   quitN = SDL_CreateTextureFromSurface(renderer,surface);
+    quitN = SDL_CreateTextureFromSurface(renderer,surface);
 
     //Release the SDL surface for later use
     SDL_FreeSurface(surface);
@@ -450,9 +471,102 @@ int main(int argc, char* argv[]) {
     //**************Create Instructions Menu- END *****************
     /////////////////////////////////////////////////////////////
 
+	//********Lose graphics - START **************
+	//create a SDL surface to hold the background image
+	surface = IMG_Load((images_dir + "lose.png").c_str());
 
-    //***************** CREATE MAIN END ***********************
+	//create a SDL texture
+	SDL_Texture *loseText;
+
+	//place surface into the texture
+	loseText = SDL_CreateTextureFromSurface(renderer, surface);
+
+	//Release the SDL surface for later use
+	SDL_FreeSurface(surface);
+
+	//create SDL Rectangle for the title graphic
+	SDL_Rect loseTextPos;
+
+	//the rectangle which has the X pos, Ypos, texture Width and texture Height - title
+	loseTextPos.x = 240;
+	loseTextPos.y = 288;
+	loseTextPos.w = 596;
+	loseTextPos.h = 114;
+
+	//********Lose graphics - END **************
+
+
+    //***************** CREATE WIN END ***********************
     /////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////
+	//**************Create Win Graphics - START *****************
+
+	//********Instructions graphics - START **************
+	//create a SDL surface to hold the background image
+	surface = IMG_Load((images_dir + "win.png").c_str());
+
+	//create a SDL texture
+	SDL_Texture *winText;
+
+	//place surface into the texture
+	winText = SDL_CreateTextureFromSurface(renderer, surface);
+
+	//Release the SDL surface for later use
+	SDL_FreeSurface(surface);
+
+	//create SDL Rectangle for the title graphic
+	SDL_Rect winTextPos;
+
+	//the rectangle which has the X pos, Ypos, texture Width and texture Height - title
+	winTextPos.x = 240;
+	winTextPos.y = 288;
+	winTextPos.w = 596;
+	winTextPos.h = 114;
+
+	//********Win graphics - END **************
+
+	//********Small Play Again Button - START **************
+	//create a SDL surface to hold the background image
+	surface = IMG_Load((images_dir + "play_n.png").c_str());
+
+	//create a SDL texture
+	SDL_Texture *playN;
+
+	//place surface into the texture
+	playN = SDL_CreateTextureFromSurface(renderer, surface);
+
+	//Release the SDL surface for later use
+	SDL_FreeSurface(surface);
+
+	//create a SDL surface to hold the background image
+	surface = IMG_Load((images_dir + "play_o.png").c_str());
+
+	//create a SDL texture
+	SDL_Texture *playO;
+
+	//place surface into the texture
+	playO = SDL_CreateTextureFromSurface(renderer, surface);
+
+	//Release the SDL surface for later use
+	SDL_FreeSurface(surface);
+
+	//create SDL Rectangle for the title graphic
+	SDL_Rect playNPos;
+
+	//the rectangle which has the X pos, Ypos, texture Width and texture Height - title
+	playNPos.x = 875;
+	playNPos.y = 702;
+	playNPos.w = 125;
+	playNPos.h = 40;
+
+	//********Small Menu Button - START **************
+
+	//**************Create Instructions Menu- END *****************
+	/////////////////////////////////////////////////////////////
+
+
+
 
 
 	//***** Set up a Game Controller variable *****
@@ -475,6 +589,7 @@ int main(int argc, char* argv[]) {
 
 	// Boolean values to control movement through the states
 	bool menu, instructions, players1, players2, win, lose, quit;
+	quit = false;
 
     // The window is open: could enter program loop here (see SDL_PollEvent())
 	while(!quit)
@@ -642,10 +757,10 @@ int main(int argc, char* argv[]) {
 					//Draw instructions Graphic
 					SDL_RenderCopy(renderer, instructionsText, NULL, &instructionsTextPos);
 
-					//Draw instructions Graphic
+					//Draw menu Graphic
 					SDL_RenderCopy(renderer, menuN, NULL, &menuNPos);
 
-					//Draw instructions Graphic
+					//Draw cursor Graphic
 					SDL_RenderCopy(renderer, cursor, NULL, &cursorPos);
 
 					//SDL Render present
@@ -795,11 +910,16 @@ int main(int argc, char* argv[]) {
 				win = true;
 				cout << "The Game State is WIN" << endl;
 				cout << "Press the A Button for Main Menu Screen" << endl;
-				cout << "Press the B Button to Quit" << endl;
+				cout << "Press the B Button to Replay Game" << endl;
 				cout << endl;
 
 				while(win)
 				{
+					//set up frame rate for the section, or CASE
+					thisTime = SDL_GetTicks();
+					deltaTime = (float)(thisTime - lastTime) / 1000;
+					lastTime = thisTime;
+
 					//check for input events
 					if(SDL_PollEvent(&event))
 					{
@@ -826,12 +946,41 @@ int main(int argc, char* argv[]) {
 									if(event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
 									{
 										win = false;
-										quit = true;
+										gameState = PLAYERS1;
 									}
 								}
 							break;
 						}
 					}
+
+					//Update Section
+					UpdateBackground();
+
+					//Start Drawing
+					//Clear SDL renderer
+					SDL_RenderClear(renderer);
+
+					//Draw the bkgd1
+					SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
+
+					//Draw the bkgd2
+					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+
+					//Draw win Text
+					SDL_RenderCopy(renderer,winText, NULL, &winTextPos);
+
+					//Draw Play Again
+					SDL_RenderCopy(renderer, playN, NULL, &playNPos);
+
+					//Draw menu Graphic
+					SDL_RenderCopy(renderer, menuN, NULL, &menuNPos);
+
+					//Draw cursor Graphic
+					SDL_RenderCopy(renderer, cursor, NULL, &cursorPos);
+
+					//SDL Render present
+					SDL_RenderPresent(renderer);
+
 				}
 			break; // end of the win case
 
@@ -839,11 +988,16 @@ int main(int argc, char* argv[]) {
 				lose = true;
 				cout << "The Game State is LOSE" << endl;
 				cout << "Press the A Button for Main Menu Screen" << endl;
-				cout << "Press the B Button to Quit" << endl;
+				cout << "Press the B Button to Replay Game" << endl;
 				cout << endl;
 
 				while(lose)
 				{
+					//set up frame rate for the section, or CASE
+					thisTime = SDL_GetTicks();
+					deltaTime = (float)(thisTime - lastTime) / 1000;
+					lastTime = thisTime;
+
 					//check for input events
 					if(SDL_PollEvent(&event))
 					{
@@ -870,13 +1024,42 @@ int main(int argc, char* argv[]) {
 									if(event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
 									{
 										lose = false;
-										quit = true;
+										gameState = PLAYERS1;
 									}
 								}
 							break;
 						}
 					}
+
+					//Update Section
+					UpdateBackground();
+
+					//Start Drawing
+					//Clear SDL renderer
+					SDL_RenderClear(renderer);
+
+					//Draw the bkgd1
+					SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
+
+					//Draw the bkgd2
+					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+
+					//Draw win Text
+					SDL_RenderCopy(renderer, loseText, NULL, &loseTextPos);
+
+					//Draw Play Again
+					SDL_RenderCopy(renderer, playN, NULL, &playNPos);
+
+					//Draw menu Graphic
+					SDL_RenderCopy(renderer, menuN, NULL, &menuNPos);
+
+					//Draw cursor Graphic
+					SDL_RenderCopy(renderer, cursor, NULL, &cursorPos);
+
+					//SDL Render present
+					SDL_RenderPresent(renderer);
 				}
+
 			break; // end of the lose case
 		}
 	}
