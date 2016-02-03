@@ -158,5 +158,39 @@ void Player::OnControllerAxis(const SDL_ControllerAxisEvent event)
 			}
 		}
 	}
+
+	//if the player snumber is 0 and the joystick button is from joystick O
+	if(event.which == 1 && playerNum == 1)
+	{
+		//X axis
+		if(event.axis == 0)
+		{
+			if(event.value < -JOYSTICK_DEAD_ZONE)
+			{
+				xDir = -1.0f; //left
+			}
+			else if(event.value > JOYSTICK_DEAD_ZONE)
+			{
+				xDir = 1.0f; //right
+			}else{
+				xDir = 0.0f; //none
+			}
+		}
+
+		//Y axis
+		if(event.axis == 1)
+		{
+			if(event.value < -JOYSTICK_DEAD_ZONE)
+			{
+				yDir = -1.0f; //down
+			}
+			else if(event.value > JOYSTICK_DEAD_ZONE)
+			{
+				yDir = 1.0f; //up
+			}else{
+				yDir = 0.0f; //none
+			}
+		}
+	}
 }
 
