@@ -22,8 +22,6 @@ using namespace std;
 #include <vector>
 #include "bullet.h"
 
-
-
 class Player
 {
 public:
@@ -61,19 +59,23 @@ public:
 	//starting position X, starting position Y
 	Player(SDL_Renderer *renderer, int pNum, string filePath, float x, float y);
 
-	//update the plyaer using the passed in deltaTime
-	void Update(float deltaTime);
-
-	//draw the player main's passed in renderer
-	void Draw(SDL_Renderer *renderer);
-
 	//method to allow the player the move via joystick axis
 	void OnControllerAxis(const SDL_ControllerAxisEvent event);
 
 	//method to allow the player interact with joystick buttons
 	void OnControllerButton(const SDL_ControllerButtonEvent event);
 
+	//update the plyaer using the passed in deltaTime
+	void Update(float deltaTime);
+
+	//draw the player main's passed in renderer
+	void Draw(SDL_Renderer *renderer);
+
 	//player's destruction method
-	//Player();
+	~Player();
+
+private:
+
+	void CreateBullet();
 
 };

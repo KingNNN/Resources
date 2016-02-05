@@ -69,7 +69,7 @@ void Bullet::Draw(SDL_Renderer *renderer)
 //Bullet destruction
 Bullet::~Bullet()
 {
-	SDL_DestroyTexture(texture);
+	//SDL_DestroyTexture(texture);
 }
 
 

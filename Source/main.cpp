@@ -184,7 +184,6 @@ bool playOver = false;
 
 #include "player.h"
 
-
 int main(int argc, char* argv[]) {
 
 //Cout to show we are running on Windows
