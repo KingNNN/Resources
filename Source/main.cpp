@@ -6,6 +6,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL2_mixer"s
 
 #endif
 
@@ -13,6 +14,7 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2_image/SDL_image.h"
+#include "SDL2_mixer/SDL_mixer.h"
 
 #endif
 
@@ -25,6 +27,7 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
+#include "SDL2_mixer/SDL_mixer.h"
 
 #endif
 
@@ -195,6 +198,7 @@ int main(int argc, char* argv[]) {
 
 	//create a string to link to the images folder on __APPLE__
 	string images_dir = currentWorkingDirectory + "\\Resources\\Images\\";
+	string audio_dir = currentWorkingDirectory + "\\Resources\\Audio\\";
 
 #endif
 
@@ -209,6 +213,9 @@ int main(int argc, char* argv[]) {
 	//create a string to link to the images folder on __APPLE__
 	string images_dir = currentWorkingDirectory + "/Resources/Images/";
 
+	//create a string to link the adio folder on __LINUX__
+	string audio_dir = currentWorkingDirectory + "/Resources/Audio/";
+
 #endif
 
 //Cout to show that we are running on Apple
@@ -221,6 +228,9 @@ int main(int argc, char* argv[]) {
 
 	//create a string to link to the images folder on __APPLE__
 	string images_dir = currentWorkingDirectory +"/Resources/Images/";
+
+	//create a string to link the adio folder on __APPLE__
+	string audio_dir = currentWorkingDirectory + "/Resources/Audio/";
 
 #endif
 
@@ -354,10 +364,10 @@ int main(int argc, char* argv[]) {
     SDL_Rect titlePos;
 
     //the rectangle which has the X pos, Ypos, texture Width and texture Height - title
-    titlePos.x = 330;
-    titlePos.y = 120;
-    titlePos.w = 390;
-    titlePos.h = 45;
+    titlePos.x = 275;
+    titlePos.y = 110;
+    titlePos.w = 500;
+    titlePos.h = 75;
 
 
     //**************Create Title - END *****************
@@ -395,7 +405,7 @@ int main(int argc, char* argv[]) {
     SDL_Rect players1NPos;
 
     //the rectangle which has the X pos, Ypos, texture Width and texture Height - title
-    players1NPos.x = 400;
+    players1NPos.x = 410;
     players1NPos.y = 220;
     players1NPos.w = 390;
     players1NPos.h = 45;
@@ -436,7 +446,7 @@ int main(int argc, char* argv[]) {
     SDL_Rect players2NPos;
 
     //the rectangle which has the X pos, Ypos, texture Width and texture Height - title
-    players2NPos.x = 390;
+    players2NPos.x = 400;
     players2NPos.y = 300;
     players2NPos.w = 390;
     players2NPos.h = 45;
@@ -477,10 +487,10 @@ int main(int argc, char* argv[]) {
     SDL_Rect instructNPos;
 
     //the rectangle which has the X pos, Ypos, texture Width and texture Height - title
-    instructNPos.x = 385;
-    instructNPos.y = 390;
+    instructNPos.x = 390;
+    instructNPos.y = 385;
     instructNPos.w = 262;
-    instructNPos.h = 33;
+    instructNPos.h = 32;
 
     //**************Instructions - END *****************
     /////////////////////////////////////////////////////////////
@@ -516,7 +526,7 @@ int main(int argc, char* argv[]) {
     SDL_Rect quitNPos;
 
     //the rectangle which has the X pos, Ypos, texture Width and texture Height - title
-    quitNPos.x = 460;
+    quitNPos.x = 465;
     quitNPos.y = 452;
     quitNPos.w = 380;
     quitNPos.h = 48;
@@ -717,13 +727,34 @@ int main(int argc, char* argv[]) {
 	bool menu, instructions, players1, players2, win, lose, quit;
 	quit = false;
 
+	//Open Audio Channel
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+	//Load a MUSIC file
+	Mix_Music *bgm = Mix_LoadMUS((audio_dir + "background.mp3").c_str());
+
+	//If the MUSIC file is not playig - play it.
+	if(!Mix_PlayingMusic())
+	{
+		Mix_PlayMusic(bgm, -1);
+	}
+
+	//Set up a Sound Effects CHUNK for the button over state
+	Mix_Chunk *overSound = Mix_LoadWAV((audio_dir + "over.wav").c_str());
+
+	//Set up a Sound Effects CHUNK for the button over state
+	Mix_Chunk *pressedSound = Mix_LoadWAV((audio_dir + "pressed.wav").c_str());
+
+	//bool value to control the over sound effect and the buttons
+	bool alreadyOver = false;
+
     // The window is open: could enter program loop here (see SDL_PollEvent())
 	while(!quit)
 	{
 		switch(gameState)
 		{
 			case MENU:
-
+				alreadyOver = false;
 				menu = true;
 				cout << "The Game State is Menu" << endl;
 				cout << "Press the A Button for Instructions" << endl;
@@ -760,6 +791,8 @@ int main(int argc, char* argv[]) {
 										//if player chooses 1 player game
 										if(players1Over)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
 											menu = false;
 											gameState = PLAYERS1;
 											players1Over = false;
@@ -768,6 +801,8 @@ int main(int argc, char* argv[]) {
 										//if player chooses 2 player game
 										if(players2Over)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
 											menu = false;
 											gameState = PLAYERS2;
 											players2Over = false;
@@ -775,6 +810,8 @@ int main(int argc, char* argv[]) {
 										//if player chooses instructions
 										if(instructionsOver)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
 											menu = false;
 											gameState = INSTRUCTIONS;
 											instructionsOver = false;
@@ -782,6 +819,12 @@ int main(int argc, char* argv[]) {
 										//if player chooses 1 player game
 										if(quitOver)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
+
+											//add a slight delay
+											SDL_Delay(200);
+
 											menu = false;
 											quit = true;
 											quitOver = false;
@@ -808,6 +851,21 @@ int main(int argc, char* argv[]) {
 					instructionsOver = SDL_HasIntersection(&activePos, &instructNPos);
 					quitOver = SDL_HasIntersection(&activePos, &quitNPos);
 
+					//if the curso ris over a button, play the over sound
+					if(players1Over || players2Over || instructionsOver || quitOver)
+					{
+						if(alreadyOver == false)
+						{
+							Mix_PlayChannel(-1,overSound,0);
+							alreadyOver = true;
+						}
+					}
+
+					//if the cursor is not over any button, reset the already over yar
+					if(!players1Over && !players2Over && !instructionsOver && !quitOver)
+					{
+						alreadyOver = false;
+					}
 					//Start Drawing
 					//Clear SDL renderer
 					SDL_RenderClear(renderer);
@@ -865,6 +923,7 @@ int main(int argc, char* argv[]) {
 			break; // end of the main menu case
 
 			case INSTRUCTIONS:
+				alreadyOver = false;
 				instructions = true;
 				cout << "The Game State is Instructions" << endl;
 				cout << "Press the A Button for Main Menu" << endl;
@@ -898,6 +957,8 @@ int main(int argc, char* argv[]) {
 									{
 										if(menuOver)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
 											instructions = false;
 											gameState = MENU;
 											menuOver = false;
@@ -921,6 +982,22 @@ int main(int argc, char* argv[]) {
 
 					//check for cursor over menu botton
 					menuOver = SDL_HasIntersection(&activePos, &menuNPos);
+
+					//if the curso ris over a button, play the over sound
+					if(menuOver)
+					{
+						if(alreadyOver == false)
+						{
+							Mix_PlayChannel(-1,overSound,0);
+							alreadyOver = true;
+						}
+					}
+
+					//if the cursor is not over any button, reset the already over yar
+					if(!menuOver)
+					{
+						alreadyOver = false;
+					}
 
 					//Start Drawing
 					//Clear SDL renderer
@@ -958,7 +1035,7 @@ int main(int argc, char* argv[]) {
 
 			case PLAYERS1:
 				players1 = true;
-
+				alreadyOver = false;
 				while(players1)
 				{
 					//set up frame rate for the section, or CASE
@@ -1034,6 +1111,7 @@ int main(int argc, char* argv[]) {
 			break; // end of the player1 case
 
 			case PLAYERS2:
+				alreadyOver = false;
 				players2 = true;
 				cout << "The Game State is 2 Player Game" << endl;
 				cout << "Press the A Button for Win Screen" << endl;
@@ -1123,6 +1201,7 @@ int main(int argc, char* argv[]) {
 			break; // end of the player2 case
 
 			case WIN:
+				alreadyOver = false;
 				win = true;
 				cout << "The Game State is WIN" << endl;
 				cout << "Press the A Button for Main Menu Screen" << endl;
@@ -1157,6 +1236,8 @@ int main(int argc, char* argv[]) {
 									{
 										if(menuOver)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
 											win = false;
 											gameState = MENU;
 											menuOver = false;
@@ -1164,6 +1245,8 @@ int main(int argc, char* argv[]) {
 
 										if(playOver)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
 											win = false;
 											gameState = PLAYERS1;
 											playOver = false;
@@ -1183,9 +1266,27 @@ int main(int argc, char* argv[]) {
 					//Update Section
 					UpdateCursor(deltaTime);
 
+
+
 					//check for cursor collision
 					menuOver = SDL_HasIntersection(&activePos, &menuNPos);
 					playOver = SDL_HasIntersection(&activePos, &playNPos);
+
+					//if the curso ris over a button, play the over sound
+					if(menuOver || playOver)
+					{
+						if(alreadyOver == false)
+						{
+							Mix_PlayChannel(-1,overSound,0);
+							alreadyOver = true;
+						}
+					}
+
+					//if the cursor is not over any button, reset the already over yar
+					if(!menuOver && !playOver)
+					{
+						alreadyOver = false;
+					}
 
 					//Start Drawing
 					//Clear SDL renderer
@@ -1226,6 +1327,7 @@ int main(int argc, char* argv[]) {
 			break; // end of the win case
 
 			case LOSE:
+				alreadyOver = false;
 				lose = true;
 				cout << "The Game State is LOSE" << endl;
 				cout << "Press the A Button for Main Menu Screen" << endl;
@@ -1260,6 +1362,8 @@ int main(int argc, char* argv[]) {
 									{
 										if(menuOver)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
 											lose = false;
 											gameState = MENU;
 											menuOver = false;
@@ -1267,6 +1371,8 @@ int main(int argc, char* argv[]) {
 
 										if(playOver)
 										{
+											//play the over sound - plays fine through levels, must pause for QUIT
+											Mix_PlayChannel(-1, pressedSound, 0);
 											lose = false;
 											gameState = PLAYERS1;
 											playOver = false;
@@ -1289,6 +1395,22 @@ int main(int argc, char* argv[]) {
 					//check for cursor collision
 					menuOver = SDL_HasIntersection(&activePos, &menuNPos);
 					playOver = SDL_HasIntersection(&activePos, &playNPos);
+
+					//if the curso ris over a button, play the over sound
+					if(menuOver || playOver)
+					{
+						if(alreadyOver == false)
+						{
+							Mix_PlayChannel(-1,overSound,0);
+							alreadyOver = true;
+						}
+					}
+
+					//if the cursor is not over any button, reset the already over yar
+					if(!menuOver && !playOver)
+					{
+						alreadyOver = false;
+					}
 
 					//Start Drawing
 					//Clear SDL renderer
