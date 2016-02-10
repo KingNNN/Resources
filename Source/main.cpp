@@ -263,9 +263,7 @@ int main(int argc, char* argv[]) {
     //create the renderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    //create renderer
-    Player player1 = Player(renderer, 0, images_dir.c_str(),250.0,500.0);
-    Player player2 = Player(renderer, 1, images_dir.c_str(),750.0,500.0);
+
     /////////////////////////////////////////////////////////////
     //**************Main Menu - START *****************
 
@@ -748,6 +746,10 @@ int main(int argc, char* argv[]) {
 	//bool value to control the over sound effect and the buttons
 	bool alreadyOver = false;
 
+    //create renderer
+    Player player1 = Player(renderer, 0, images_dir.c_str(), audio_dir.c_str(),250.0,500.0);
+    Player player2 = Player(renderer, 1, images_dir.c_str(), audio_dir.c_str(),750.0,500.0);
+
     // The window is open: could enter program loop here (see SDL_PollEvent())
 	while(!quit)
 	{
@@ -1086,7 +1088,7 @@ int main(int argc, char* argv[]) {
 					UpdateBackground(deltaTime);
 
 					//Update Player
-					player1.Update(deltaTime);
+					player1.Update(deltaTime, renderer);
 
 					//Start Drawing
 					//Clear SDL renderer
@@ -1172,10 +1174,10 @@ int main(int argc, char* argv[]) {
 					UpdateBackground(deltaTime);
 
 					//Update Player 1
-					player1.Update(deltaTime);
+					player1.Update(deltaTime, renderer);
 
 					//Update Player 2
-					player2.Update(deltaTime);
+					player2.Update(deltaTime, renderer);
 
 					//Start Drawing
 					//Clear SDL renderer
