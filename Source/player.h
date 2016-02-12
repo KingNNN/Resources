@@ -21,6 +21,7 @@
 
 //needed includes
 #include <stdio.h>
+#include <string>
 #include <iostream>
 #include <sstream>
 
@@ -41,10 +42,10 @@ public:
 	TTF_Font *font;
 
 	//font core var
-	SDL_Color colorP1 = {0,255,0,255};
+	SDL_Color colorP1 = {255,255,0,255};
 
 	//font color var
-	SDL_Color colorP2 = {0,0,255,255};
+	SDL_Color colorP2 = {255,0,0,255};
 
 	//surface for the player score and player lives
 	SDL_Surface *scoreSurface, *livesSurface;
@@ -111,6 +112,9 @@ public:
 
 	//update score method
 	void UpdateScore(SDL_Renderer *renderer);
+
+	//update lives method
+	void UpdateLives(SDL_Renderer *renderer);
 
 private:
 

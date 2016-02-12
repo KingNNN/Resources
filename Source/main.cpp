@@ -6,7 +6,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
-#include "SDL2_mixer"s
+#include "SDL2_mixer"
 
 #endif
 
@@ -186,8 +186,19 @@ bool playOver = false;
 
 
 #include "player.h"
+#include "enemy.h"
+#include <vector>
+#include <stdlib.h>
+#include <time.h>
+
+//variable to hold the list of enemies: for 1 player game - 6 total for 2 player games - 12 total
+vector<Enemy> enemyList;
 
 int main(int argc, char* argv[]) {
+
+
+	/*initialize random seed: */
+	srand (time(NULL));
 
 //Cout to show we are running on Windows
 #if defined(_WIN32) || (_WIN64)
@@ -1036,8 +1047,22 @@ int main(int argc, char* argv[]) {
 
 
 			case PLAYERS1:
+
+				enemyList.clear();
+
 				players1 = true;
 				alreadyOver = false;
+
+				//Create the enemy pool - 6
+				for (int i = 0; i < 6; i++)
+				{
+					//create the enemy
+					Enemy tmpEnemy(renderer, images_dir);
+
+					//add to enemylist
+					enemyList.push_back(tmpEnemy);
+
+				}
 				while(players1)
 				{
 					//set up frame rate for the section, or CASE
@@ -1090,6 +1115,13 @@ int main(int argc, char* argv[]) {
 					//Update Player
 					player1.Update(deltaTime, renderer);
 
+					//update enemys
+					for(int i = 0; i < enemyList.size(); i++)
+					{
+						//update enemy
+						enemyList[i].Update(deltaTime);
+					}
+
 					//Start Drawing
 					//Clear SDL renderer
 					SDL_RenderClear(renderer);
@@ -1099,6 +1131,13 @@ int main(int argc, char* argv[]) {
 
 					//Draw the bkgd2
 					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+
+					//Draw the enemies
+					for(int i = 0; i < enemyList.size(); i++)
+					{
+						//update enemy
+						enemyList[i].Draw(renderer);
+					}
 
 					//Draw the title
 					SDL_RenderCopy(renderer, players1N, NULL, &players1NPos);

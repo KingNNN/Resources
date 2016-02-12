@@ -30,18 +30,22 @@ Player::Player(SDL_Renderer *renderer, int pNum, string filePath, string audioPa
 	if(playerNum == 0)
 	{
 		//create the score texture x and y positions
-		scorePos.x = scorePos.y = 10;
+		scorePos.x = 10;
+		scorePos.y = 10;
 		livesPos.x = 10;
-		livesPos.y = 40;
+		livesPos.y = 50;
 	}else{
 		scorePos.x = 650;
 		scorePos.y = 10;
 		livesPos.x = 650;
-		livesPos.y = 40;
+		livesPos.y = 50;
 	}
 
 	//update score method
 	UpdateScore(renderer);
+
+	//update score method
+	UpdateLives(renderer);
 
 	//see if this is player 1, or player 2, and create the correct file path
 	if(playerNum == 0)
@@ -115,7 +119,7 @@ void Player::UpdateScore(SDL_Renderer *renderer)
 	Result = convert.str();		//set 'Result' to teh contents of the stream
 
 	//create the text for the font texture
-	tempScore = "Player Score: " + Result;
+	tempScore = "PLAYER SCORE: " + Result;
 
 	//check to see what player this is and color the font as needed
 	if(playerNum == 0)
@@ -139,6 +143,43 @@ void Player::UpdateScore(SDL_Renderer *renderer)
 
 	//set the old score
 	oldScore = playerScore;
+
+}
+
+//update lives
+void Player::UpdateLives(SDL_Renderer *renderer)
+{
+	//fix for to_string problems on linux
+	string Result;		//string which will contain the result
+	ostringstream convert;		//stream used for the conversion
+	convert << playerLives;		//inser thte textual representation of "number' in the characters in teh stream
+	Result = convert.str();		//set 'Result' to teh contents of the stream
+
+	//create the text for the font texture
+	tempLives = "PLAYER LIVES: " + Result;
+
+	//check to see what player this is and color the font as needed
+	if(playerNum == 0)
+	{
+		//place the player 1 score info into a surface
+		livesSurface = TTF_RenderText_Solid(font, tempLives.c_str(),colorP1);
+
+	}else{
+		//place the player 1 score info into a surface
+		livesSurface = TTF_RenderText_Solid(font, tempLives.c_str(),colorP2);
+	}
+
+	//create the player score texture
+	livesTexture = SDL_CreateTextureFromSurface(renderer,livesSurface);
+
+	//get the Width and Height of the texture
+	SDL_QueryTexture(livesTexture,NULL,NULL,&livesPos.w,&livesPos.h);
+
+	//free surface
+	SDL_FreeSurface(livesSurface);
+
+	//set the old score
+	oldLives = playerLives;
 
 }
 //player update method
@@ -193,6 +234,12 @@ void Player::Update(float deltaTime, SDL_Renderer *renderer)
 		UpdateScore(renderer);
 	}
 
+	//should lives be updated?
+	if(playerLives != oldLives)
+	{
+		UpdateLives(renderer);
+	}
+
 }
 
 //player draw method
@@ -212,7 +259,11 @@ void Player::Draw(SDL_Renderer *renderer)
 		}
 	}
 
+	//draw the player score
 	SDL_RenderCopy(renderer,scoreTexture,NULL,&scorePos);
+
+	//draw the player lives
+	SDL_RenderCopy(renderer,livesTexture,NULL,&livesPos);
 }
 
 
@@ -231,7 +282,11 @@ void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
 		//if A button
 		if(event.button == 0)
 		{
-			cout << "Player 1 - Button A" << endl;
+			//TEST- change player score
+			playerScore += 10;
+
+			//TEST- change player lives
+			playerLives -= 1;
 
 			//create the bullet
 			CreateBullet();
@@ -243,7 +298,11 @@ void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
 		//if A button
 		if(event.button == 0)
 		{
-			cout << "Player 2- Button A" << endl;
+			//TEST- change player score
+			playerScore += 10;
+
+			//TEST- change player lives
+			playerLives -= 1;
 
 			//create the bullet
 			CreateBullet();
