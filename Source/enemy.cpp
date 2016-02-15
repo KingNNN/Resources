@@ -45,7 +45,7 @@ void Enemy::Reset()
 {
 	//Set random enemy speed
 	speed = rand()% (5) + 1;
-	speed *= 100;
+	speed *= 50;
 
 	//generate random x position and set y back to the top of the screen
 	posRect.x = rand() % (1024-posRect.w) + 1;
@@ -57,7 +57,6 @@ void Enemy::Reset()
 
 
 }
-
 
 //Enemy update method
 void Enemy::Update(float deltaTime)
@@ -76,7 +75,7 @@ void Enemy::Update(float deltaTime)
 	}
 
 	//update angle
-	angle += .1;
+	angle += .02;
 }
 
 ///Enemy Draw method

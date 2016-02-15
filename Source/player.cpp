@@ -6,6 +6,9 @@ const int JOYSTICK_DEAD_ZONE = 8000;
 //player creation method
 Player::Player(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y)
 {
+	//activate the player
+	active = true;
+
 	//set the player number 0 or 1
 	playerNum = pNum;
 
@@ -146,6 +149,34 @@ void Player::UpdateScore(SDL_Renderer *renderer)
 
 }
 
+//reset the player method
+void Player::Reset()
+{
+	//place the player based on player number
+	if (playerNum == 0)
+	{
+		if (playerNum == 0)
+		{
+			//set x and y for playier 1
+			posRect.x = 250.00;
+			posRect.y = 500.00;
+		}
+		else {
+			//set x and y for playier 1
+			posRect.x = 550.00;
+			posRect.y = 500.00;
+		}
+
+		pos_X = posRect.x;
+		pos_Y = posRect.y;
+		playerLives = 3;
+		playerScore = 0;
+		xDir = 0;
+		yDir = 0;
+		active = true;
+	}
+}
+
 //update lives
 void Player::UpdateLives(SDL_Renderer *renderer)
 {
@@ -180,6 +211,20 @@ void Player::UpdateLives(SDL_Renderer *renderer)
 
 	//set the old score
 	oldLives = playerLives;
+
+	//if player has no mor elives
+	if (playerLives <= 0)
+	{
+		//deactive the player
+		active = false;
+
+		//move the player
+		posRect.x = posRect.y = -2000;
+
+		//set float values to location values
+		pos_X = pos_Y = -2000;
+
+	}
 
 }
 //player update method
@@ -282,12 +327,6 @@ void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
 		//if A button
 		if(event.button == 0)
 		{
-			//TEST- change player score
-			playerScore += 10;
-
-			//TEST- change player lives
-			playerLives -= 1;
-
 			//create the bullet
 			CreateBullet();
 		}
@@ -298,12 +337,6 @@ void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
 		//if A button
 		if(event.button == 0)
 		{
-			//TEST- change player score
-			playerScore += 10;
-
-			//TEST- change player lives
-			playerLives -= 1;
-
 			//create the bullet
 			CreateBullet();
 		}
@@ -341,7 +374,6 @@ void Player::CreateBullet()
 		}
 	}
 }
-
 
 //player joystick axis method
 void Player::OnControllerAxis(const SDL_ControllerAxisEvent event)
